@@ -135,12 +135,12 @@ public class JDABuilder
     {
         if (jdaCreated)
             throw new UnsupportedOperationException("You cannot change the proxy after a JDA object has been created. Proxy settings are global among all instances!");
-        this.proxy = proxy;
+        JDABuilder.proxy = proxy;
         return this;
     }
 
     /**
-     * Sets the timeout (in milliseconds) for all Websockets created by JDA (MainWS and AudioWS's) for this instance.
+     * Sets the timeout (in milliseconds) for all WebSockets created by JDA (MainWS and AudioWS's) for this instance.
      *
      * <p>By default, this is set to <b>0</b> which is supposed to represent infinite-timeout, however due to how the JVM
      * is implemented at the lower level (typically C), an infinite timeout will usually not be respected, and as such

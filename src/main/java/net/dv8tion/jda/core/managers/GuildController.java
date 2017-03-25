@@ -147,7 +147,7 @@ public class GuildController
         }
 
         if (Objects.equals(nickname, member.getNickname()))
-            return new RestAction.EmptyRestAction<Void>(null);
+            return new RestAction.EmptyRestAction<>(null);
 
         if (nickname == null)
             nickname = "";
@@ -800,7 +800,7 @@ public class GuildController
             throw new PermissionException("Cannot modified Guild Deafen status the Owner of the Guild");
 
         if (member.getVoiceState().isGuildDeafened() == deafen)
-            return new RestAction.EmptyRestAction<Void>(null);
+            return new RestAction.EmptyRestAction<>(null);
 
         JSONObject body = new JSONObject().put("deaf", deafen);
         Route.CompiledRoute route = Route.Guilds.MODIFY_MEMBER.compile(guild.getId(), member.getUser().getId());
@@ -867,7 +867,7 @@ public class GuildController
             throw new PermissionException("Cannot modified Guild Mute status the Owner of the Guild");
 
         if (member.getVoiceState().isGuildMuted() == mute)
-            return new RestAction.EmptyRestAction<Void>(null);
+            return new RestAction.EmptyRestAction<>(null);
 
         JSONObject body = new JSONObject().put("mute", mute);
         Route.CompiledRoute route = Route.Guilds.MODIFY_MEMBER.compile(guild.getId(), member.getUser().getId());
@@ -1319,16 +1319,11 @@ public class GuildController
             throw new IllegalArgumentException("Cannot add the PublicRole of a Guild to a Member. All members have this role by default!");
 
         //Make sure that the current managed roles are preserved and no new ones are added.
-        List<Role> currentManaged = roles.stream().filter(r -> r.isManaged()).collect(Collectors.toList());
-        List<Role> newManaged = roles.stream().filter(r -> r.isManaged()).collect(Collectors.toList());
+        List<Role> currentManaged = roles.stream().filter(Role::isManaged).collect(Collectors.toList());
+        List<Role> newManaged = roles.stream().filter(Role::isManaged).collect(Collectors.toList());
         if (currentManaged.size() != 0 || newManaged.size() != 0)
         {
-            for (Iterator<Role> it = currentManaged.iterator(); it.hasNext();)
-            {
-                Role r = it.next();
-                if (newManaged.contains(r))
-                    it.remove();
-            }
+            currentManaged.removeIf(newManaged::contains);
 
             if (currentManaged.size() > 0)
                 throw new IllegalArgumentException("Cannot remove managed roles from a member! Roles: " + currentManaged.toString());
@@ -1676,7 +1671,7 @@ public class GuildController
         body.put("name", name);
         body.put("image", icon.getEncoding());
         if (roles.length > 0) // making sure none of the provided roles are null before mapping them to the snowflake id
-            body.put("roles", Stream.of(roles).filter(r -> r != null).map(ISnowflake::getId).collect(Collectors.toSet()));
+            body.put("roles", Stream.of(roles).filter(Objects::nonNull).map(ISnowflake::getId).collect(Collectors.toSet()));
 
         Route.CompiledRoute route = Route.Emotes.CREATE_EMOTE.compile(guild.getId());
         return new RestAction<Emote>(getJDA(), route, body)

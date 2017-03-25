@@ -40,13 +40,10 @@ public class MessageBulkDeleteHandler extends SocketHandler
         {
             SocketHandler handler = api.getClient().getHandler("MESSAGE_DELETE");
             content.getJSONArray("ids").forEach(id ->
-            {
-
-                handler.handle(responseNumber, new JSONObject()
-                    .put("d", new JSONObject()
-                        .put("channel_id", channelId)
-                        .put("id", id)));
-            });
+                    handler.handle(responseNumber, new JSONObject()
+                        .put("d", new JSONObject()
+                            .put("channel_id", channelId)
+                            .put("id", id))));
         }
         else
         {
@@ -54,9 +51,7 @@ public class MessageBulkDeleteHandler extends SocketHandler
             if (channel == null)
             {
                 EventCache.get(api).cache(EventCache.Type.CHANNEL, channelId, () ->
-                {
-                    handle(responseNumber, allContent);
-                });
+                        handle(responseNumber, allContent));
                 EventCache.LOG.debug("Received a Bulk Message Delete for a TextChannel that is not yet cached.");
                 return null;
             }

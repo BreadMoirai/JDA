@@ -35,7 +35,7 @@ public class GroupImpl implements Group
     private final String id;
     private final JDAImpl api;
 
-    private HashMap<String, User> userMap = new HashMap<>();
+    private final HashMap<String, User> userMap = new HashMap<>();
 
     private Call currentCall;
     private User owner;

@@ -90,18 +90,15 @@ public class MessageUpdateHandler extends SocketHandler
                 case EntityBuilder.MISSING_CHANNEL:
                 {
                     EventCache.get(api).cache(EventCache.Type.CHANNEL, content.getString("channel_id"), () ->
-                    {
-                        handle(responseNumber, allContent);
-                    });
+                            handle(responseNumber, allContent));
                     EventCache.LOG.debug("Received a message update for a channel that JDA does not currently have cached");
                     return null;
                 }
                 case EntityBuilder.MISSING_USER:
                 {
                     EventCache.get(api).cache(EventCache.Type.USER, content.getJSONObject("author").getString("id"), () ->
-                    {
-                        handle(responseNumber, allContent);
-                    });
+
+                            handle(responseNumber, allContent));
                     EventCache.LOG.debug("Received a message update for a user that JDA does not currently have cached");
                     return null;
                 }
@@ -170,9 +167,7 @@ public class MessageUpdateHandler extends SocketHandler
         if (channel == null)
         {
             EventCache.get(api).cache(EventCache.Type.CHANNEL, channelId, () ->
-            {
-                handle(responseNumber, allContent);
-            });
+                    handle(responseNumber, allContent));
             EventCache.LOG.debug("Received message update for embeds for a channel/group that JDA does not have cached yet.");
             return null;
         }

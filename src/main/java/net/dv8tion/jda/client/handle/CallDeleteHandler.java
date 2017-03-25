@@ -62,9 +62,7 @@ public class CallDeleteHandler extends SocketHandler
             GroupImpl group = (GroupImpl) channel;
             group.setCurrentCall(null);
             call.getCallUserMap().forEach((userId, cUser) ->
-            {
-                ((JDAClientImpl) api.asClient()).getCallUserMap().remove(userId);
-            });
+                    ((JDAClientImpl) api.asClient()).getCallUserMap().remove(userId));
         }
         else
         {

@@ -67,7 +67,7 @@ public class GuildDeleteHandler extends SocketHandler
 
         if (content.has("unavailable") && content.getBoolean("unavailable"))
         {
-            ((GuildImpl) guild).setAvailable(false);
+            guild.setAvailable(false);
             api.getEventManager().handle(
                     new GuildUnavailableEvent(
                             api, responseNumber,
@@ -89,12 +89,7 @@ public class GuildDeleteHandler extends SocketHandler
             if (g.equals(guild))
                 continue;
 
-            for (Iterator<String> it = memberIds.iterator(); it.hasNext();)
-            {
-
-                if (g.getMembersMap().containsKey(it.next()))
-                    it.remove();
-            }
+            memberIds.removeIf(s -> g.getMembersMap().containsKey(s));
         }
 
         //If we are a client account, be sure to not remove any users from the cache that are Friends.

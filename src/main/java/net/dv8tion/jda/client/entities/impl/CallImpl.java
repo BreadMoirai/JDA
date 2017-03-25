@@ -31,8 +31,8 @@ public class CallImpl implements Call
     private final CallableChannel callableChannel;
     private final String messageId;
 
-    private HashMap<String, CallUser> callUsers = new HashMap<>();
-    private HashMap<String, CallUser> callUserHistory = new HashMap<>();
+    private final HashMap<String, CallUser> callUsers = new HashMap<>();
+    private final HashMap<String, CallUser> callUserHistory = new HashMap<>();
 
     private Region region;
 
@@ -82,7 +82,7 @@ public class CallImpl implements Call
     public List<CallUser> getRingingUsers()
     {
         return Collections.unmodifiableList(callUsers.values().stream()
-                .filter(cu -> cu.isRinging())
+                .filter(CallUser::isRinging)
                 .collect(Collectors.toList()));
     }
 

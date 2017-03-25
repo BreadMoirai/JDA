@@ -52,7 +52,6 @@ public class MessageImpl implements Message
     private String subContent = null;
     private String strippedContent = null;
     private User author;
-    private OffsetDateTime time;
     private OffsetDateTime editedTime = null;
     private List<User> mentionedUsers = new LinkedList<>();
     private List<TextChannel> mentionedChannels = new LinkedList<>();
@@ -222,10 +221,10 @@ public class MessageImpl implements Message
         {
             String tmp = getContent();
             //all the formatting keys to keep track of
-            String[] keys = new String[] {"*", "_", "`", "~~"};
+            String[] keys = { "*", "_", "`", "~~" };
 
             //find all tokens (formatting strings described above)
-            TreeSet<FormatToken> tokens = new TreeSet<>((t1, t2) -> Integer.compare(t1.start, t2.start));
+            TreeSet<FormatToken> tokens = new TreeSet<>(Comparator.comparingInt(t1 -> t1.start));
             for (String key : keys)
             {
                 Matcher matcher = Pattern.compile(Pattern.quote(key)).matcher(tmp);
@@ -275,7 +274,7 @@ public class MessageImpl implements Message
             }
 
             //sort tags to remove by their start-index and iteratively build the remaining string
-            Collections.sort(toRemove, (t1, t2) -> Integer.compare(t1.start, t2.start));
+            toRemove.sort(Comparator.comparingInt(t -> t.start));
             StringBuilder out = new StringBuilder();
             int currIndex = 0;
             for (FormatToken formatToken : toRemove)
@@ -503,12 +502,6 @@ public class MessageImpl implements Message
     public MessageImpl setTTS(boolean TTS)
     {
         isTTS = TTS;
-        return this;
-    }
-
-    public MessageImpl setTime(OffsetDateTime time)
-    {
-        this.time = time;
         return this;
     }
 

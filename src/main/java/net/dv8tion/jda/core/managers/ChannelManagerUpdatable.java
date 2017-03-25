@@ -250,7 +250,7 @@ public class ChannelManagerUpdatable
         checkPermission(Permission.MANAGE_CHANNEL);
 
         if (!needToUpdate())
-            return new RestAction.EmptyRestAction<Void>(null);
+            return new RestAction.EmptyRestAction<>(null);
 
         JSONObject frame = new JSONObject().put("name", channel.getName());
         if (name.shouldUpdate())

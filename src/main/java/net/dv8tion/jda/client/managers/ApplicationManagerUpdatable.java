@@ -9,9 +9,9 @@
  *
  * Unless required by applicable law or agreed to in writing, software
  * distributed under the License is distributed on an "AS IS" BASIS,
- *  WITHOUT WARRANTIES OR CONDITIONS OF ANY KIND, either express or implied.
+ * WITHOUT WARRANTIES OR CONDITIONS OF ANY KIND, either express or implied.
  * See the License for the specific language governing permissions and
- *  limitations under the License.
+ * limitations under the License.
  */
 
 package net.dv8tion.jda.client.managers;
@@ -27,6 +27,7 @@ import net.dv8tion.jda.core.requests.RestAction;
 import net.dv8tion.jda.core.requests.Route;
 import org.apache.http.util.Args;
 import org.json.JSONObject;
+
 import java.util.ArrayList;
 import java.util.Collections;
 import java.util.List;
@@ -325,7 +326,7 @@ public class ApplicationManagerUpdatable
 
         final JSONObject body = new JSONObject();
 
-        // All fields are required or they are resetted to default
+        // All fields are required or they are reset to default
 
         body.put("description",
                 this.description.shouldUpdate() ? this.description.getValue() : this.description.getOriginalValue());

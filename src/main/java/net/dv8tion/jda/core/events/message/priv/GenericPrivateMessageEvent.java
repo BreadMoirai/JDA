@@ -29,7 +29,7 @@ import net.dv8tion.jda.core.events.message.GenericMessageEvent;
  */
 public abstract class GenericPrivateMessageEvent extends GenericMessageEvent
 {
-    protected PrivateChannel channel;
+    protected final PrivateChannel channel;
 
     public GenericPrivateMessageEvent(JDA api, long responseNumber, Message message, PrivateChannel channel)
     {

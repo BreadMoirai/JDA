@@ -250,7 +250,7 @@ public class Route
             throw new IllegalArgumentException("An argument does not have both {}'s for route: " + method + "  " + route);
 
         //Create a String.format compilable route for parameter compiling.
-        compilableRoute = route.replaceAll("\\{.*?\\}","%s");
+        compilableRoute = route.replaceAll("\\{.*?}","%s");
 
         //If this route has major parameters that are unique markers for the ratelimit route, then we need to
         // create a ratelimit compilable route. This goes through and replaces the parameters specified by majorParameters
@@ -260,7 +260,7 @@ public class Route
         {
             int paramIndex = 0;
             String replaceRoute = route;
-            Pattern keyP = Pattern.compile("\\{(.*?)\\}");
+            Pattern keyP = Pattern.compile("\\{(.*?)}");
             Matcher keyM = keyP.matcher(route);
             //Search the route for all parameters
             while(keyM.find())

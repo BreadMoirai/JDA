@@ -19,7 +19,9 @@ import net.dv8tion.jda.core.entities.*;
 import net.dv8tion.jda.core.entities.impl.MessageImpl;
 import org.apache.http.util.Args;
 
-import java.util.*;
+import java.util.Collections;
+import java.util.LinkedList;
+import java.util.Queue;
 import java.util.regex.Matcher;
 import java.util.regex.Pattern;
 
@@ -424,7 +426,7 @@ public class MessageBuilder implements Appendable
      */
     public MessageBuilder stripMentions(JDA jda, MentionType... types)
     {
-        return this.stripMentions(jda, (Guild) null, types);
+        return this.stripMentions(jda, null, types);
     }
 
     private MessageBuilder stripMentions(JDA jda, Guild guild, MentionType... types)
@@ -497,7 +499,7 @@ public class MessageBuilder implements Appendable
                         while (matcher.find())
                         {
                             User user = jda.getUserById(matcher.group(1));
-                            String replacement = null;
+                            String replacement;
 
                             if (user == null)
                                 continue;
@@ -692,7 +694,7 @@ public class MessageBuilder implements Appendable
         if (this.isEmpty())
             throw new UnsupportedOperationException("Cannot build a Message with no content. (You never added any content to the message)");
 
-        LinkedList<Message> messages = new LinkedList<Message>();
+        LinkedList<Message> messages = new LinkedList<>();
 
         if (builder.length() <= 2000) {
             messages.add(this.build());
@@ -709,9 +711,9 @@ public class MessageBuilder implements Appendable
         messageLoop:
         while (currentBeginIndex < builder.length() - 2001)
         {
-            for (int i = 0; i < policy.length; i++)
+            for (SplitPolicy aPolicy : policy)
             {
-                int currentEndIndex = policy[i].nextMessage(currentBeginIndex, this);
+                int currentEndIndex = aPolicy.nextMessage(currentBeginIndex, this);
                 if (currentEndIndex != -1)
                 {
                     messages.add(build(currentBeginIndex, currentEndIndex));
@@ -845,7 +847,7 @@ public class MessageBuilder implements Appendable
         /**
          * <b>@Role</b> mentions
          */
-        ROLE;
+        ROLE
     }
 
     /**

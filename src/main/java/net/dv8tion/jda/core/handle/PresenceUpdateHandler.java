@@ -39,9 +39,7 @@ public class PresenceUpdateHandler extends SocketHandler
     {
         //Do a pre-check to see if this is for a Guild, and if it is, if the guild is currently locked.
         if (content.has("guild_id") && GuildLock.get(api).isLocked(content.getString("guild_id")))
-        {
             return content.getString("guild_id");
-        }
 
         JSONObject jsonUser = content.getJSONObject("user");
         String userId = jsonUser.getString("id");
@@ -110,53 +108,47 @@ public class PresenceUpdateHandler extends SocketHandler
 
             //If we are in a Guild, then we will use Member.
             // If we aren't we'll be dealing with the Relation system.
-            if (content.has("guild_id"))
-            {
-                GuildImpl guild = (GuildImpl) api.getGuildById(content.getString("guild_id"));
-                MemberImpl member = (MemberImpl) guild.getMember(user);
+            if (!content.has("guild_id")) return null;
 
-                //If the Member is null, then User isn't in the Guild.
-                //This is either because this PRESENCE_UPDATE was received before the GUILD_MEMBER_ADD event
-                // or because a Member recently left and this PRESENCE_UPDATE came after the GUILD_MEMBER_REMOVE event.
-                //If it is because a Member recently left, then the status should be OFFLINE. As such, we will ignore
-                // the event if this is the case. If the status isn't OFFLINE, we will cache and use it when the
-                // Member object is setup during GUILD_MEMBER_ADD
-                if (member == null)
+            GuildImpl guild = (GuildImpl) api.getGuildById(content.getString("guild_id"));
+            MemberImpl member = (MemberImpl) guild.getMember(user);
+
+            //If the Member is null, then User isn't in the Guild.
+            //This is either because this PRESENCE_UPDATE was received before the GUILD_MEMBER_ADD event
+            // or because a Member recently left and this PRESENCE_UPDATE came after the GUILD_MEMBER_REMOVE event.
+            //If it is because a Member recently left, then the status should be OFFLINE. As such, we will ignore
+            // the event if this is the case. If the status isn't OFFLINE, we will cache and use it when the
+            // Member object is setup during GUILD_MEMBER_ADD
+            if (member == null)
+            {
+                //Cache the presence and return to finish up.
+                if (status != OnlineStatus.OFFLINE)
                 {
-                    //Cache the presence and return to finish up.
-                    if (status != OnlineStatus.OFFLINE)
-                    {
-                        guild.getCachedPresenceMap().put(userId, content);
-                        return null;
-                    }
-                }
-                else
-                {
-                    //The member is already cached, so modify the presence values and fire events as needed.
-                    if (!member.getOnlineStatus().equals(status))
-                    {
-                        OnlineStatus oldStatus = member.getOnlineStatus();
-                        member.setOnlineStatus(status);
-                        api.getEventManager().handle(
-                                new UserOnlineStatusUpdateEvent(
-                                        api, responseNumber,
-                                        user, guild, oldStatus));
-                    }
-                    if(member.getGame() == null ? nextGame != null : !member.getGame().equals(nextGame))
-                    {
-                        Game oldGame = member.getGame();
-                        member.setGame(nextGame);
-                        api.getEventManager().handle(
-                                new UserGameUpdateEvent(
-                                        api, responseNumber,
-                                        user, guild, oldGame));
-                    }
+                    guild.getCachedPresenceMap().put(userId, content);
+                    return null;
                 }
             }
             else
             {
-                //In this case, this PRESENCE_UPDATE is for a Relation.
-
+                //The member is already cached, so modify the presence values and fire events as needed.
+                if (!member.getOnlineStatus().equals(status))
+                {
+                    OnlineStatus oldStatus = member.getOnlineStatus();
+                    member.setOnlineStatus(status);
+                    api.getEventManager().handle(
+                            new UserOnlineStatusUpdateEvent(
+                                    api, responseNumber,
+                                    user, guild, oldStatus));
+                }
+                if(member.getGame() == null ? nextGame != null : !member.getGame().equals(nextGame))
+                {
+                    Game oldGame = member.getGame();
+                    member.setGame(nextGame);
+                    api.getEventManager().handle(
+                            new UserGameUpdateEvent(
+                                    api, responseNumber,
+                                    user, guild, oldGame));
+                }
             }
         }
         else
@@ -175,15 +167,10 @@ public class PresenceUpdateHandler extends SocketHandler
                 return null;
 
             //If this was for a Guild, cache it in the Guild for later use in GUILD_MEMBER_ADD
-            if (content.has("guild_id"))
-            {
-                GuildImpl guild = (GuildImpl) api.getGuildById(content.getString("guild_id"));
-                guild.getCachedPresenceMap().put(userId, content);
-            }
-            else
-            {
-                //cache in relationship stuff
-            }
+            if (!content.has("guild_id")) return null;
+
+            GuildImpl guild = (GuildImpl) api.getGuildById(content.getString("guild_id"));
+            guild.getCachedPresenceMap().put(userId, content);
         }
         return null;
     }

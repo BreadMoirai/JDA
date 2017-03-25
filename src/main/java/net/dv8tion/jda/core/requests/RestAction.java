@@ -156,7 +156,7 @@ public abstract class RestAction<T>
             success = DEFAULT_SUCCESS;
         if (failure == null)
             failure = DEFAULT_FAILURE;
-        api.getRequester().request(new Request<T>(this, success, failure, true));
+        api.getRequester().request(new Request<>(this, success, failure, true));
     }
 
     /**
@@ -188,7 +188,7 @@ public abstract class RestAction<T>
     public Future<T> submit(boolean shouldQueue)
     {
         finalizeData();
-        return new RequestFuture<T>(this, shouldQueue);
+        return new RequestFuture<>(this, shouldQueue);
     }
 
     /**

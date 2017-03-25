@@ -31,7 +31,6 @@ import net.dv8tion.jda.core.handle.GuildMembersChunkHandler;
 import net.dv8tion.jda.core.handle.ReadyHandler;
 import net.dv8tion.jda.core.requests.GuildLock;
 import net.dv8tion.jda.core.requests.WebSocketClient;
-
 import org.apache.commons.lang3.StringUtils;
 import org.json.JSONArray;
 import org.json.JSONException;
@@ -59,13 +58,7 @@ public class EntityBuilder
 
     public static EntityBuilder get(JDA api)
     {
-        EntityBuilder builder = builders.get(api);
-        if (builder == null)
-        {
-            builder = new EntityBuilder(api);
-            builders.put(api, builder);
-        }
-        return builder;
+        return builders.computeIfAbsent(api, EntityBuilder::new);
     }
 
     private EntityBuilder(JDA api)
@@ -711,7 +704,6 @@ public class EntityBuilder
 
         MessageImpl message = new MessageImpl(id, chan, fromWebhook)
                 .setContent(content)
-                .setTime(!jsonObject.isNull("timestamp") ? OffsetDateTime.parse(jsonObject.getString("timestamp")) : OffsetDateTime.now())
                 .setMentionsEveryone(!jsonObject.isNull("mention_everyone") && jsonObject.getBoolean("mention_everyone"))
                 .setTTS(!jsonObject.isNull("tts") && jsonObject.getBoolean("tts"))
                 .setPinned(!jsonObject.isNull("pinned") && jsonObject.getBoolean("pinned"));
@@ -846,7 +838,7 @@ public class EntityBuilder
                     }
                 }
             }
-            message.setMentionedUsers(new LinkedList<User>(mentionedUsers.values()));
+            message.setMentionedUsers(new LinkedList<>(mentionedUsers.values()));
 
             TreeMap<Integer, Role> mentionedRoles = new TreeMap<>();
             if (!jsonObject.isNull("mention_roles"))
@@ -863,7 +855,7 @@ public class EntityBuilder
                     }
                 }
             }
-            message.setMentionedRoles(new LinkedList<Role>(mentionedRoles.values()));
+            message.setMentionedRoles(new LinkedList<>(mentionedRoles.values()));
 
             List<TextChannel> mentionedChannels = new LinkedList<>();
             Map<String, TextChannel> chanMap = ((GuildImpl) textChannel.getGuild()).getTextChannelsMap();
@@ -977,7 +969,7 @@ public class EntityBuilder
 
     public PermissionOverride createPermissionOverride(JSONObject override, Channel chan)
     {
-        PermissionOverrideImpl permOverride = null;
+        PermissionOverrideImpl permOverride;
         String id = override.getString("id");
         long allow = override.getLong("allow");
         long deny = override.getLong("deny");

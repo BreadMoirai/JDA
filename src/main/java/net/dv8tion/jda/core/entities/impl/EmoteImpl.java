@@ -49,10 +49,10 @@ public class EmoteImpl implements Emote
     private final String id;
     private final Guild guild;
     private final JDA api;
+    private final Object mngLock = new Object();
 
     private volatile EmoteManager manager = null;
     private volatile EmoteManagerUpdatable managerUpdatable = null;
-    private Object mngLock = new Object();
 
     private boolean managed = false;
     private HashSet<Role> roles = null;

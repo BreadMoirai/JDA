@@ -114,8 +114,8 @@ public class ClientRateLimiter extends RateLimiter
     {
         final String route;
         final RateLimit rateLimit;
+        final ConcurrentLinkedQueue<Request> requests = new ConcurrentLinkedQueue<>();
         volatile long retryAfter = 0;
-        volatile ConcurrentLinkedQueue<Request> requests = new ConcurrentLinkedQueue<>();
 
         public Bucket(String route, RateLimit rateLimit)
         {

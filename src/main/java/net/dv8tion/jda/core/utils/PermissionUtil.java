@@ -236,7 +236,7 @@ public class PermissionUtil
         for (Permission perm : permissions)
         {
             if (!guild.getPublicRole().hasPermission(perm)
-                    && !roles.parallelStream().anyMatch(role -> role.hasPermission(perm)))
+                    && roles.parallelStream().noneMatch(role -> role.hasPermission(perm)))
                 return false;
         }
         return true;

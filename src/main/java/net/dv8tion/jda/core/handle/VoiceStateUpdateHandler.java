@@ -82,9 +82,7 @@ public class VoiceStateUpdateHandler extends SocketHandler
         if (guild == null)
         {
             EventCache.get(api).cache(EventCache.Type.GUILD, content.getString("guild_id"), () ->
-            {
-                handle(responseNumber, allContent);
-            });
+                    handle(responseNumber, allContent));
             EventCache.LOG.debug("Received a VOICE_STATE_UPDATE for a Guild that has yet to be cached. JSON: " + content);
             return;
         }
@@ -93,9 +91,7 @@ public class VoiceStateUpdateHandler extends SocketHandler
         if (channel == null && channelId != null)
         {
             EventCache.get(api).cache(EventCache.Type.CHANNEL, channelId, () ->
-            {
-                handle(responseNumber, allContent);
-            });
+                    handle(responseNumber, allContent));
             EventCache.LOG.debug("Received VOICE_STATE_UPDATE for a VoiceChannel that has yet to be cached. JSON: " + content);
             return;
         }
@@ -114,9 +110,7 @@ public class VoiceStateUpdateHandler extends SocketHandler
             // it we will preserve the integrity of the cache in the event that it was actually a mis-ordering of
             // GUILD_MEMBER_ADD and VOICE_STATE_UPDATE. I'll take some bad-data events over an invalid cache.
             EventCache.get(api).cache(EventCache.Type.USER, userId, () ->
-            {
-                handle(responseNumber, allContent);
-            });
+                    handle(responseNumber, allContent));
             EventCache.LOG.debug("Received VOICE_STATE_UPDATE for a Member that has yet to be cached. JSON: " + content);
             return;
         }
@@ -267,7 +261,6 @@ public class VoiceStateUpdateHandler extends SocketHandler
             }
 
             Call call = cUser.getCall();
-            channel = call.getCallableChannel();
             vState = (CallVoiceStateImpl) cUser.getVoiceState();
             vState.setSessionId(sessionId);
             vState.setInCall(false);

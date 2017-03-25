@@ -55,10 +55,10 @@ public class GuildImpl implements Guild
 
     private final HashMap<String, JSONObject> cachedPresences = new HashMap<>();
 
+    private final Object mngLock = new Object();
     private volatile GuildManager manager;
     private volatile GuildManagerUpdatable managerUpdatable;
     private volatile GuildController controller;
-    private Object mngLock = new Object();
 
     private Member owner;
     private String name;
@@ -286,7 +286,7 @@ public class GuildImpl implements Guild
     public List<TextChannel> getTextChannels()
     {
         ArrayList<TextChannel> channels = new ArrayList<>(textChannels.values());
-        Collections.sort(channels, (c1, c2) -> c2.compareTo(c1));
+        channels.sort(Comparator.reverseOrder());
         return Collections.unmodifiableList(channels);
     }
 
@@ -312,7 +312,7 @@ public class GuildImpl implements Guild
     public List<VoiceChannel> getVoiceChannels()
     {
         List<VoiceChannel> channels = new ArrayList<>(voiceChannels.values());
-        Collections.sort(channels, (v1, v2) -> v2.compareTo(v1));
+        channels.sort(Comparator.reverseOrder());
         return Collections.unmodifiableList(channels);
     }
 
@@ -326,7 +326,7 @@ public class GuildImpl implements Guild
     public List<Role> getRoles()
     {
         List<Role> list = new ArrayList<>(roles.values());
-        Collections.sort(list, (r1, r2) -> r2.compareTo(r1));
+        list.sort(Comparator.reverseOrder());
         return Collections.unmodifiableList(list);
     }
 
@@ -488,18 +488,13 @@ public class GuildImpl implements Guild
         if (!api.isAudioEnabled())
             throw new IllegalStateException("Audio is disabled. Cannot retrieve an AudioManager while audio is disabled.");
 
-        HashMap<String, AudioManager> audioManagers = ((JDAImpl) api).getAudioManagerMap();
+        HashMap<String, AudioManager> audioManagers = api.getAudioManagerMap();
         AudioManager mng = audioManagers.get(id);
         if (mng == null)
         {
             synchronized (audioManagers)
             {
-                mng = audioManagers.get(id);
-                if (mng == null)
-                {
-                    mng = new AudioManagerImpl(this);
-                    audioManagers.put(id, mng);
-                }
+                mng = audioManagers.computeIfAbsent(id, k -> new AudioManagerImpl(this));
             }
         }
         return mng;

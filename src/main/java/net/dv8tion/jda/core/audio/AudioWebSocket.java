@@ -16,7 +16,10 @@
 
 package net.dv8tion.jda.core.audio;
 
-import com.neovisionaries.ws.client.*;
+import com.neovisionaries.ws.client.WebSocket;
+import com.neovisionaries.ws.client.WebSocketAdapter;
+import com.neovisionaries.ws.client.WebSocketException;
+import com.neovisionaries.ws.client.WebSocketFrame;
 import net.dv8tion.jda.core.JDA;
 import net.dv8tion.jda.core.audio.hooks.ConnectionListener;
 import net.dv8tion.jda.core.audio.hooks.ConnectionStatus;
@@ -26,12 +29,14 @@ import net.dv8tion.jda.core.entities.VoiceChannel;
 import net.dv8tion.jda.core.entities.impl.JDAImpl;
 import net.dv8tion.jda.core.managers.impl.AudioManagerImpl;
 import net.dv8tion.jda.core.utils.SimpleLog;
-import org.apache.http.HttpHost;
 import org.json.JSONArray;
 import org.json.JSONObject;
 
 import java.io.IOException;
-import java.net.*;
+import java.net.DatagramPacket;
+import java.net.DatagramSocket;
+import java.net.InetSocketAddress;
+import java.net.NoRouteToHostException;
 import java.nio.ByteBuffer;
 import java.util.Arrays;
 import java.util.HashMap;
@@ -62,18 +67,18 @@ public class AudioWebSocket extends WebSocketAdapter
 
     private final JDAImpl api;
     private final Guild guild;
+    private final String endpoint;
+    private final String sessionId;
+    private final String token;
     private boolean connected = false;
     private boolean ready = false;
     private Runnable keepAliveRunnable;
     public WebSocket socket;
-    private String endpoint;
     private String wssEndpoint;
     private boolean shutdown;
     private boolean shouldReconnect;
 
     private int ssrc;
-    private String sessionId;
-    private String token;
     private byte[] secretKey;
 
     private DatagramSocket udpSocket;
@@ -167,7 +172,7 @@ public class AudioWebSocket extends WebSocketAdapter
                 int heartbeatInterval = content.getInt("heartbeat_interval");
 
                 //Find our external IP and Port using Discord
-                InetSocketAddress externalIpAndPort = null;
+                InetSocketAddress externalIpAndPort;
 
                 changeStatus(ConnectionStatus.CONNECTING_ATTEMPTING_UDP_DISCOVERY);
                 int tries = 0;
@@ -238,10 +243,7 @@ public class AudioWebSocket extends WebSocketAdapter
                 }
 
                 audioConnection.updateUserSSRC(ssrc, userId, speaking);
-                if (user != null)
-                {
-                    listener.onUserSpeaking(user, speaking);
-                }
+                listener.onUserSpeaking(user, speaking);
                 break;
             }
             default:
@@ -436,10 +438,6 @@ public class AudioWebSocket extends WebSocketAdapter
 
             return new InetSocketAddress(ourIP, ourPort);
         }
-        catch (SocketException e)
-        {
-            return null;
-        }
         catch (IOException e)
         {
             return null;
@@ -511,7 +509,7 @@ public class AudioWebSocket extends WebSocketAdapter
     private class KeepAliveThreadFactory implements ThreadFactory
     {
         final String identifier;
-        AtomicInteger threadCount = new AtomicInteger(1);
+        final AtomicInteger threadCount = new AtomicInteger(1);
 
         public KeepAliveThreadFactory(JDAImpl api)
         {

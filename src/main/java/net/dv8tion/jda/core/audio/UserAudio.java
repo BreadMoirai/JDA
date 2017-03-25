@@ -23,8 +23,8 @@ import net.dv8tion.jda.core.entities.User;
  */
 public class UserAudio
 {
-    protected User user;
-    protected short[] audioData;
+    protected final User user;
+    protected final short[] audioData;
 
     public UserAudio(User user, short[] audioData)
     {
@@ -59,14 +59,14 @@ public class UserAudio
         short s;
         int byteIndex = 0;
         byte[] audio = new byte[audioData.length * 2];
-        for (int i = 0; i < audioData.length; i++)
+        for (short anAudioData : audioData)
         {
-            s = audioData[i];
+            s = anAudioData;
             if (volume != 1.0)
                 s = (short) (s * volume);
 
             byte leftByte = (byte) ((0x000000FF) & (s >> 8));
-            byte rightByte =  (byte) (0x000000FF & s);
+            byte rightByte = (byte) (0x000000FF & s);
             audio[byteIndex] = leftByte;
             audio[byteIndex + 1] = rightByte;
             byteIndex += 2;

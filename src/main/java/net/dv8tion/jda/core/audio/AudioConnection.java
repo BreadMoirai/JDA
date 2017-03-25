@@ -59,9 +59,9 @@ public class AudioConnection
     private volatile AudioSendHandler sendHandler = null;
     private volatile AudioReceiveHandler receiveHandler = null;
     private PointerByReference opusEncoder;
-    private volatile HashMap<Integer, String> ssrcMap = new HashMap<>();
-    private volatile HashMap<Integer, Decoder> opusDecoders = new HashMap<>();
-    private volatile HashMap<User, Queue<Pair<Long, short[]>>> combinedQueue = new HashMap<>();
+    private final HashMap<Integer, String> ssrcMap = new HashMap<>();
+    private final HashMap<Integer, Decoder> opusDecoders = new HashMap<>();
+    private final HashMap<User, Queue<Pair<Long, short[]>>> combinedQueue = new HashMap<>();
     private ScheduledExecutorService combinedAudioExecutor;
 
     private IAudioSendSystem sendSystem;
@@ -95,7 +95,7 @@ public class AudioConnection
                 JDAImpl api = (JDAImpl) getJDA();
                 long started = System.currentTimeMillis();
                 boolean connectionTimeout = false;
-                while (!webSocket.isReady() && !connectionTimeout)
+                while (!webSocket.isReady())
                 {
                     if (timeout > 0 && System.currentTimeMillis() - started > timeout)
                     {
@@ -220,7 +220,7 @@ public class AudioConnection
             opusEncoder = null;
         }
 
-        opusDecoders.values().forEach(decoder -> decoder.close());
+        opusDecoders.values().forEach(Decoder::close);
         opusDecoders.clear();
     }
 
@@ -265,7 +265,7 @@ public class AudioConnection
                 combinedAudioExecutor = null;
             }
 
-            opusDecoders.values().forEach(decoder -> decoder.close());
+            opusDecoders.values().forEach(Decoder::close);
             opusDecoders.clear();
         }
         else if (receiveHandler != null && !receiveHandler.canReceiveCombined() && combinedAudioExecutor != null)
@@ -359,13 +359,9 @@ public class AudioConnection
                                         }
                                         if (receiveHandler.canReceiveCombined())
                                         {
-                                            Queue<Pair<Long, short[]>> queue = combinedQueue.get(user);
-                                            if (queue == null)
-                                            {
-                                                queue = new ConcurrentLinkedQueue<>();
-                                                combinedQueue.put(user, queue);
-                                            }
-                                            queue.add(Pair.<Long, short[]>of(System.currentTimeMillis(), decodedAudio));
+                                            Queue<Pair<Long, short[]>> queue = combinedQueue.computeIfAbsent(user,
+                                                    k -> new ConcurrentLinkedQueue<>());
+                                            queue.add(Pair.of(System.currentTimeMillis(), decodedAudio));
                                         }
                                     }
                                 }
@@ -376,15 +372,9 @@ public class AudioConnection
                                 sendSilentPackets();
                             }
                         }
-                        catch (SocketTimeoutException e)
+                        catch (SocketTimeoutException | SocketException e)
                         {
                             //Ignore. We set a low timeout so that we wont block forever so we can properly shutdown the loop.
-                        }
-                        catch (SocketException e)
-                        {
-                            //The socket was closed while we were listening for the next packet.
-                            //This is expected. Ignore the exception. The thread will exit during the next while
-                            // iteration because the udpSocket.isClosed() will return true.
                         }
                         catch (Exception e)
                         {

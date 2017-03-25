@@ -84,12 +84,12 @@ public class AnnotatedEventManager implements IEventManager
             Map<Object, List<Method>> listeners = methods.get(eventClass);
             if (listeners != null)
             {
-                listeners.entrySet().forEach(e -> e.getValue().forEach(method ->
+                listeners.forEach((key, value) -> value.forEach(method ->
                 {
                     try
                     {
                         method.setAccessible(true);
-                        method.invoke(e.getKey(), event);
+                        method.invoke(key, event);
                     }
                     catch (IllegalAccessException | InvocationTargetException e1)
                     {

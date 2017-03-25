@@ -68,6 +68,9 @@ public class JDAImpl implements JDA
     protected final PresenceImpl presence;
     protected final JDAClient jdaClient;
     protected final JDABot jdaBot;
+    protected final boolean audioEnabled;
+    protected final boolean useShutdownHook;
+    protected final boolean bulkDeleteSplittingEnabled;
 
     protected WebSocketClient client;
     protected Requester requester;
@@ -77,9 +80,6 @@ public class JDAImpl implements JDA
     protected SelfUser selfUser;
     protected ShardInfo shardInfo;
     protected String token = null;
-    protected boolean audioEnabled;
-    protected boolean useShutdownHook;
-    protected boolean bulkDeleteSplittingEnabled;
     protected boolean autoReconnect;
     protected long responseTotal;
     protected long ping = -1;

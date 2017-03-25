@@ -39,7 +39,7 @@ public class MessageHistory
 {
     protected final MessageChannel channel;
 
-    protected ListOrderedMap<String, Message> history = new ListOrderedMap<>();
+    protected final ListOrderedMap<String, Message> history = new ListOrderedMap<>();
 
     /**
      * Creates a new MessageHistory object.

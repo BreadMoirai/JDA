@@ -16,7 +16,6 @@
 
 package net.dv8tion.jda.client.entities.impl;
 
-import java.util.*;
 import net.dv8tion.jda.client.entities.Application;
 import net.dv8tion.jda.client.managers.ApplicationManager;
 import net.dv8tion.jda.client.managers.ApplicationManagerUpdatable;
@@ -29,13 +28,15 @@ import net.dv8tion.jda.core.requests.Route;
 import org.json.JSONArray;
 import org.json.JSONObject;
 
+import java.util.*;
+
 public class ApplicationImpl implements Application
 {
 
     private final JDA api;
+    private final Object mngLock = new Object();
     private ApplicationManager manager;
     private ApplicationManagerUpdatable managerUpdatable;
-    private Object mngLock = new Object();
 
     private BotImpl bot;
     private String description;

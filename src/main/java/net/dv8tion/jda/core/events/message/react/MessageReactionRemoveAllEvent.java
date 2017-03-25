@@ -23,8 +23,8 @@ import net.dv8tion.jda.core.events.Event;
 public class MessageReactionRemoveAllEvent extends Event
 {
 
-    protected String messageId;
-    protected MessageChannel channel;
+    protected final String messageId;
+    protected final MessageChannel channel;
 
     public MessageReactionRemoveAllEvent(JDA api, long responseNumber, String messageId, MessageChannel channel)
     {

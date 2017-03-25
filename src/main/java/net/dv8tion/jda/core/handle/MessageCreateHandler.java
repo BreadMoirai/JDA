@@ -70,18 +70,15 @@ public class MessageCreateHandler extends SocketHandler
                 case EntityBuilder.MISSING_CHANNEL:
                 {
                     EventCache.get(api).cache(EventCache.Type.CHANNEL, content.getString("channel_id"), () ->
-                    {
-                        handle(responseNumber, allContent);
-                    });
+                            handle(responseNumber, allContent));
                     EventCache.LOG.debug("Received a message for a channel that JDA does not currently have cached");
                     return null;
                 }
                 case EntityBuilder.MISSING_USER:
                 {
                     EventCache.get(api).cache(EventCache.Type.USER, content.getJSONObject("author").getString("id"), () ->
-                    {
-                        handle(responseNumber, allContent);
-                    });
+
+                            handle(responseNumber, allContent));
                     EventCache.LOG.debug("Received a message for a user that JDA does not currently have cached");
                     return null;
                 }

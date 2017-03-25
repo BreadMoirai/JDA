@@ -42,9 +42,7 @@ public class ChannelRecipientRemoveHandler extends SocketHandler
         if (group == null)
         {
             EventCache.get(api).cache(EventCache.Type.CHANNEL, groupId, () ->
-            {
-                handle(responseNumber, allContent);
-            });
+                    handle(responseNumber, allContent));
             EventCache.LOG.debug("Received a CHANNEL_RECIPIENT_REMOVE for a group that is not yet cached! JSON: " + content);
             return null;
         }
@@ -53,9 +51,7 @@ public class ChannelRecipientRemoveHandler extends SocketHandler
         if (user == null)
         {
             EventCache.get(api).cache(EventCache.Type.USER, userId, () ->
-            {
-                handle(responseNumber, allContent);
-            });
+                    handle(responseNumber, allContent));
             EventCache.LOG.debug("Received a CHANNEL_RECIPIENT_REMOVE for a user that is not yet cached in the group! JSON: " + content);
             return null;
         }
@@ -72,7 +68,7 @@ public class ChannelRecipientRemoveHandler extends SocketHandler
         if (user.isFake()
                 && !user.hasPrivateChannel()
                 && api.asClient().getRelationshipById(userId) == null
-                && api.asClient().getGroups().stream().allMatch(g -> !g.getUsers().contains(user)))
+                && api.asClient().getGroups().stream().noneMatch(g -> g.getUsers().contains(user)))
         {
             api.getFakeUserMap().remove(userId);
         }

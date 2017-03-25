@@ -27,7 +27,7 @@ public class SelfUserImpl extends UserImpl implements SelfUser
 {
     protected volatile AccountManager manager;
     protected volatile AccountManagerUpdatable managerUpdatable;
-    private Object mngLock = new Object();
+    private final Object mngLock = new Object();
 
     private boolean verified;
     private boolean mfaEnabled;

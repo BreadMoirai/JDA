@@ -28,7 +28,7 @@ public class RequestFuture<T> extends CompletableFuture<T>
 
     public RequestFuture(RestAction<T> restAction, boolean shouldQueue)
     {
-        this.request = new Request<T>(restAction, this::complete, this::completeExceptionally, shouldQueue);
+        this.request = new Request<>(restAction, this::complete, this::completeExceptionally, shouldQueue);
         ((JDAImpl) restAction.getJDA()).getRequester().request(request);
     }
 

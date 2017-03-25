@@ -43,9 +43,7 @@ public class GuildMemberAddHandler extends SocketHandler
         if (guild == null)
         {
             EventCache.get(api).cache(EventCache.Type.GUILD, content.getString("guild_id"), () ->
-            {
-                handle(responseNumber, allContent);
-            });
+                    handle(responseNumber, allContent));
             return null;
         }
 

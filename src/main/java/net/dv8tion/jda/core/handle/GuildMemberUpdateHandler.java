@@ -53,9 +53,7 @@ public class GuildMemberUpdateHandler extends SocketHandler
         if (guild == null)
         {
             EventCache.get(api).cache(EventCache.Type.GUILD, userJson.getString("id"), () ->
-            {
-                handle(responseNumber, allContent);
-            });
+                    handle(responseNumber, allContent));
             EventCache.LOG.debug("Got GuildMember update but JDA currently does not have the Guild cached. " + content.toString());
             return null;
         }
@@ -64,9 +62,7 @@ public class GuildMemberUpdateHandler extends SocketHandler
         if (member == null)
         {
             EventCache.get(api).cache(EventCache.Type.USER, userJson.getString("id"), () ->
-            {
-                handle(responseNumber, allContent);
-            });
+                    handle(responseNumber, allContent));
             EventCache.LOG.debug("Got GuildMember update but Member is not currently present in Guild. " + content.toString());
             return null;
         }
@@ -145,9 +141,7 @@ public class GuildMemberUpdateHandler extends SocketHandler
             else
             {
                 EventCache.get(api).cache(EventCache.Type.ROLE, array.getString(i), () ->
-                {
-                    handle(responseNumber, allContent);
-                });
+                        handle(responseNumber, allContent));
                 EventCache.LOG.debug("Got GuildMember update but one of the Roles for the Member is not yet cached.");
                 return null;
             }

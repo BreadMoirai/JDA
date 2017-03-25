@@ -31,7 +31,7 @@ import net.dv8tion.jda.core.requests.RestAction;
  */
 public class WebhookManager
 {
-    protected WebhookManagerUpdatable manager;
+    protected final WebhookManagerUpdatable manager;
 
     /**
      * Creates a new WebhookManager instance

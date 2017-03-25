@@ -46,9 +46,7 @@ public class GuildRoleUpdateHandler extends SocketHandler
         if (guild == null)
         {
             EventCache.get(api).cache(EventCache.Type.GUILD, guildId, () ->
-            {
-                handle(responseNumber, allContent);
-            });
+                    handle(responseNumber, allContent));
             EventCache.LOG.debug("Received a Role Update for a Guild that is not yet cached: " + content);
             return null;
         }
@@ -57,9 +55,7 @@ public class GuildRoleUpdateHandler extends SocketHandler
         if (role == null)
         {
             EventCache.get(api).cache(EventCache.Type.ROLE, rolejson.getString("id"), () ->
-            {
-                handle(responseNumber, allContent);
-            });
+                    handle(responseNumber, allContent));
             EventCache.LOG.debug("Received a Role Update for Role that is not yet cached: " + content);
             return null;
         }

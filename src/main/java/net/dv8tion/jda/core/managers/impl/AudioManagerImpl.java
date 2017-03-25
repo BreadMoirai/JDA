@@ -49,12 +49,12 @@ public class AudioManagerImpl implements AudioManager
 
     protected final JDAImpl api;
     protected final Guild guild;
+    protected final ListenerProxy connectionListener = new ListenerProxy();
     protected AudioConnection audioConnection = null;
     protected VoiceChannel queuedAudioConnection = null;
 
     protected AudioSendHandler sendHandler;
     protected AudioReceiveHandler receiveHandler;
-    protected ListenerProxy connectionListener = new ListenerProxy();
     protected long queueTimeout = 100;
     protected boolean shouldReconnect = true;
 

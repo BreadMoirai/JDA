@@ -25,35 +25,18 @@ import java.util.List;
 public class EventCache
 {
     public static final SimpleLog LOG = SimpleLog.getLog("EventCache");
-    private static HashMap<JDA, EventCache> caches = new HashMap<>();
-    private HashMap<Type, HashMap<String, List<Runnable>>> eventCache = new HashMap<>();
+    private static final HashMap<JDA, EventCache> caches = new HashMap<>();
+    private final HashMap<Type, HashMap<String, List<Runnable>>> eventCache = new HashMap<>();
 
     public static EventCache get(JDA jda)
     {
-        EventCache cache = caches.get(jda);
-        if (cache == null)
-        {
-            cache = new EventCache();
-            caches.put(jda, cache);
-        }
-        return cache;
+        return caches.computeIfAbsent(jda, k -> new EventCache());
     }
 
     public void cache(Type type, String triggerId, Runnable handler)
     {
-        HashMap<String, List<Runnable>> triggerCache = eventCache.get(type);
-        if (triggerCache == null)
-        {
-            triggerCache = new HashMap<>();
-            eventCache.put(type, triggerCache);
-        }
-
-        List<Runnable> items = triggerCache.get(triggerId);
-        if (items == null)
-        {
-            items = new LinkedList<>();
-            triggerCache.put(triggerId, items);
-        }
+        HashMap<String, List<Runnable>> triggerCache = eventCache.computeIfAbsent(type, k -> new HashMap<>());
+        List<Runnable> items = triggerCache.computeIfAbsent(triggerId, k -> new LinkedList<>());
 
         items.add(handler);
     }

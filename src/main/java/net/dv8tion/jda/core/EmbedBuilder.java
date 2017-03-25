@@ -20,11 +20,7 @@ import net.dv8tion.jda.core.entities.impl.MessageEmbedImpl;
 import org.apache.http.util.Args;
 
 import java.awt.Color;
-import java.time.DateTimeException;
-import java.time.Instant;
-import java.time.LocalDateTime;
-import java.time.OffsetDateTime;
-import java.time.ZoneOffset;
+import java.time.*;
 import java.time.temporal.TemporalAccessor;
 import java.util.LinkedList;
 import java.util.List;
@@ -41,7 +37,7 @@ import java.util.regex.Pattern;
 public class EmbedBuilder 
 {
     public final static String ZERO_WIDTH_SPACE = "\u200E";
-    public final static Pattern URL_PATTERN = Pattern.compile("\\s*(https?|attachment):\\/\\/.+\\..{2,}\\s*", Pattern.CASE_INSENSITIVE);
+    public final static Pattern URL_PATTERN = Pattern.compile("\\s*(https?|attachment)://.+\\..{2,}\\s*", Pattern.CASE_INSENSITIVE);
     
     private String url;
     private String title;
@@ -544,11 +540,10 @@ public class EmbedBuilder
 
     private void urlCheck(String url)
     {
-        if (url == null)
-            return;
-        else if (url.length() > MessageEmbed.URL_MAX_LENGTH)
-            throw new IllegalArgumentException("URL cannot be longer than " + MessageEmbed.URL_MAX_LENGTH + " characters.");
-        else if (!URL_PATTERN.matcher(url).matches())
-            throw new IllegalArgumentException("URL must be a valid http or https url.");
+        if (url == null) return;
+
+        Args.check(url.length() <= MessageEmbed.URL_MAX_LENGTH,
+                "URL cannot be longer than %d characters.", MessageEmbed.URL_MAX_LENGTH);
+        Args.check(URL_PATTERN.matcher(url).matches(), "URL must be a valid http or https url.");
     }
 }

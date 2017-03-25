@@ -47,9 +47,7 @@ public class GuildBanHandler extends SocketHandler
         if (guild == null)
         {
             EventCache.get(api).cache(EventCache.Type.GUILD, content.getString("guild_id"), () ->
-            {
-                handle(responseNumber, allContent);
-            });
+                    handle(responseNumber, allContent));
             EventCache.LOG.debug("Received Guild Member " + (banned ? "Ban" : "Unban") + " event for a Guild not yet cached.");
             return null;
         }

@@ -19,7 +19,6 @@ package net.dv8tion.jda.core.requests;
 import com.mashape.unirest.http.HttpResponse;
 import net.dv8tion.jda.core.entities.impl.JDAImpl;
 import net.dv8tion.jda.core.requests.Route.CompiledRoute;
-import net.dv8tion.jda.core.requests.Route.RateLimit;
 import net.dv8tion.jda.core.requests.ratelimit.IBucket;
 
 import java.util.ArrayList;
@@ -27,7 +26,6 @@ import java.util.Collections;
 import java.util.List;
 import java.util.concurrent.*;
 import java.util.concurrent.atomic.AtomicInteger;
-import java.util.stream.Collectors;
 
 public abstract class RateLimiter
 {
@@ -35,9 +33,9 @@ public abstract class RateLimiter
 
     protected final Requester requester;
     protected final ScheduledExecutorService pool;
+    protected final ConcurrentHashMap<String, IBucket> buckets = new ConcurrentHashMap<>();
+    protected final ConcurrentLinkedQueue<IBucket> submittedBuckets = new ConcurrentLinkedQueue<>();
     protected volatile boolean isShutdown;
-    protected volatile ConcurrentHashMap<String, IBucket> buckets = new ConcurrentHashMap<>();
-    protected volatile ConcurrentLinkedQueue<IBucket> submittedBuckets = new ConcurrentLinkedQueue<>();
 
     protected RateLimiter(Requester requester, int poolSize)
     {
@@ -86,7 +84,7 @@ public abstract class RateLimiter
     private class RateLimitThreadFactory implements ThreadFactory
     {
         final String identifier;
-        AtomicInteger threadCount = new AtomicInteger(1);
+        final AtomicInteger threadCount = new AtomicInteger(1);
 
         public RateLimitThreadFactory(JDAImpl api)
         {

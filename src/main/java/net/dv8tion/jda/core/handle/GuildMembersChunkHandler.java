@@ -27,8 +27,8 @@ import java.util.List;
 
 public class GuildMembersChunkHandler extends SocketHandler
 {
-    HashMap<String, Integer> expectedGuildMembers = new HashMap<>();
-    HashMap<String, List<JSONArray>> memberChunksCache = new HashMap<>();
+    private final HashMap<String, Integer> expectedGuildMembers = new HashMap<>();
+    private final HashMap<String, List<JSONArray>> memberChunksCache = new HashMap<>();
 
 
     public GuildMembersChunkHandler(JDAImpl api)
@@ -41,7 +41,7 @@ public class GuildMembersChunkHandler extends SocketHandler
     {
         String guildId = content.getString("guild_id");
         List<JSONArray> memberChunks = memberChunksCache.get(guildId);
-        Integer expectMemberCount = (Integer) expectedGuildMembers.get(guildId);
+        Integer expectMemberCount = expectedGuildMembers.get(guildId);
 
         JSONArray members = content.getJSONArray("members");
         JDAImpl.LOG.debug("GUILD_MEMBER_CHUNK for: " + guildId + " \tMembers: " + members.length());
@@ -80,7 +80,7 @@ public class GuildMembersChunkHandler extends SocketHandler
     {
         try
         {
-            Integer i = (Integer) expectedGuildMembers.get(guildId);
+            Integer i = expectedGuildMembers.get(guildId);
             i += changeAmount;
             expectedGuildMembers.put(guildId, i);
         }

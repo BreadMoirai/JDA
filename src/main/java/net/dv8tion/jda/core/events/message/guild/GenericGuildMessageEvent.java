@@ -31,7 +31,7 @@ import net.dv8tion.jda.core.events.message.GenericMessageEvent;
  */
 public abstract class GenericGuildMessageEvent extends GenericMessageEvent
 {
-    protected TextChannel channel;
+    protected final TextChannel channel;
 
     public GenericGuildMessageEvent(JDA api, long responseNumber, Message message, TextChannel channel)
     {

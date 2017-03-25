@@ -34,7 +34,7 @@ public class PermissionOverrideImpl implements PermissionOverride
 {
     protected volatile PermOverrideManager manager;
     protected volatile PermOverrideManagerUpdatable managerUpdatable;
-    protected volatile Object mngLock = new Object();
+    protected final Object mngLock = new Object();
 
     private final Member member;
     private final Role role;
