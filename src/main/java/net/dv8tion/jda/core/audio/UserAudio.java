@@ -56,12 +56,10 @@ public class UserAudio
      */
     public byte[] getAudioData(double volume)
     {
-        short s;
         int byteIndex = 0;
         byte[] audio = new byte[audioData.length * 2];
-        for (short anAudioData : audioData)
+        for (short s : audioData)
         {
-            s = anAudioData;
             if (volume != 1.0)
                 s = (short) (s * volume);
 

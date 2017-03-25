@@ -97,7 +97,6 @@ public class MessageUpdateHandler extends SocketHandler
                 case EntityBuilder.MISSING_USER:
                 {
                     EventCache.get(api).cache(EventCache.Type.USER, content.getJSONObject("author").getString("id"), () ->
-
                             handle(responseNumber, allContent));
                     EventCache.LOG.debug("Received a message update for a user that JDA does not currently have cached");
                     return null;

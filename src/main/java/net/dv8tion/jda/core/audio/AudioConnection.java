@@ -374,7 +374,10 @@ public class AudioConnection
                         }
                         catch (SocketTimeoutException | SocketException e)
                         {
-                            //Ignore. We set a low timeout so that we wont block forever so we can properly shutdown the loop.
+                            //TimeoutException: Ignore. We set a low timeout so that we wont block forever so we can properly shutdown the loop.
+                            //SocketException:  The socket was closed while we were listening for the next packet.
+                            //This is expected. Ignore the exception. The thread will exit during the next while
+                            // iteration because the udpSocket.isClosed() will return true.
                         }
                         catch (Exception e)
                         {
