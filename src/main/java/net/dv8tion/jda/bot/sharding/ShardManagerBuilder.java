@@ -62,12 +62,12 @@ public class ShardManagerBuilder
      */
     public ShardManagerBuilder(final int shardsTotal)
     {
-        setShardTotal(shardsTotal);
+        this.setShardTotal(shardsTotal);
     }
 
-    public ShardManagerBuilder addListener(final Object... listeners)
+    public ShardManagerBuilder addEventListener(final Object... listeners)
     {
-        this.builder.addListener(listeners);
+        this.builder.addEventListener(listeners);
         return this;
     }
 
@@ -122,8 +122,8 @@ public class ShardManagerBuilder
     public ShardManager buildBlocking()
             throws LoginException, IllegalArgumentException, InterruptedException, RateLimitedException
     {
-        final ShardsReadyListener listener = new ShardsReadyListener(upperBound - lowerBound + 1);
-        this.addListener(listener);
+        final ShardsReadyListener listener = new ShardsReadyListener(this.upperBound - this.lowerBound + 1);
+        this.addEventListener(listener);
         final ShardManager manager = this.buildAsync();
         synchronized (listener)
         {
@@ -133,26 +133,15 @@ public class ShardManagerBuilder
         return manager;
     }
 
-    public ShardManagerBuilder removeListener(final Object... listeners)
+    public ShardManagerBuilder removeEventListener(final Object... listeners)
     {
-        this.builder.removeListener(listeners);
+        this.builder.removeEventListener(listeners);
         return this;
     }
 
     public ShardManagerBuilder setAudioEnabled(final boolean enabled)
     {
         this.builder.setAudioEnabled(enabled);
-        return this;
-    }
-
-    public ShardManagerBuilder setShardRange(final int lowerBound, final int upperBound)
-    {
-        Args.notNegative(lowerBound, "lowerBound");
-        Args.check(upperBound < shardsTotal, "upperBound must be lower than shardsTotal");
-        Args.check(lowerBound <= upperBound, "lowerBound must be lower than or equal to upperBound");
-
-        this.lowerBound = lowerBound;
-        this.upperBound = upperBound;
         return this;
     }
 
@@ -204,6 +193,17 @@ public class ShardManagerBuilder
         return this;
     }
 
+    public ShardManagerBuilder setShardRange(final int lowerBound, final int upperBound)
+    {
+        Args.notNegative(lowerBound, "lowerBound");
+        Args.check(upperBound < this.shardsTotal, "upperBound must be lower than shardsTotal");
+        Args.check(lowerBound <= upperBound, "lowerBound must be lower than or equal to upperBound");
+
+        this.lowerBound = lowerBound;
+        this.upperBound = upperBound;
+        return this;
+    }
+
     /**
      * TODO: completely change docs
      *
@@ -227,7 +227,7 @@ public class ShardManagerBuilder
     {
         Args.positive(shardsTotal, "shardsTotal");
         this.shardsTotal = shardsTotal;
-        if (lowerBound == -1 && upperBound == -1)
+        if (this.lowerBound == -1 && this.upperBound == -1)
             this.setShardRange(0, shardsTotal - 1);
 
         return this;

@@ -114,7 +114,7 @@ public class ShardManager // TODO: think about what methods ShardManager should 
         this.shardsTotal = shardsTotal;
         this.numShards = upperBound - lowerBound + 1;
 
-        TIntObjectMap<JDAImpl> shards = new TIntObjectHashMap<>(numShards);
+        final TIntObjectMap<JDAImpl> shards = new TIntObjectHashMap<>(this.numShards);
         this.shards = TCollections.unmodifiableMap(shards);
 
         final AtomicInteger shard = new AtomicInteger(minShardId);
@@ -172,6 +172,16 @@ public class ShardManager // TODO: think about what methods ShardManager should 
         this.shards.valueCollection().forEach(jda -> jda.getPresence().setGame(game));
     }
 
+    public void addEventListener(final Object... listeners)
+    {
+        this.shards.valueCollection().forEach(jda -> jda.addEventListener(listeners));
+    }
+
+    public void removeEventListener(final Object... listeners)
+    {
+        this.shards.valueCollection().forEach(jda -> jda.removeEventListener(listeners));
+    }
+
     public void setIdle(final boolean idle)
     {
         this.shards.valueCollection().forEach(jda -> jda.getPresence().setIdle(idle));
@@ -196,7 +206,7 @@ public class ShardManager // TODO: think about what methods ShardManager should 
             this.loginThread.interrupt();
 
         if (this.shards != null)
-            for (JDA jda : shards.valueCollection()) // TODO: decide weather this should be done in parallel
+            for (final JDA jda : this.shards.valueCollection()) // TODO: decide weather this should be done in parallel
                 jda.shutdown(false);
 
         if (free)
